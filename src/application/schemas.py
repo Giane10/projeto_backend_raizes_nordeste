@@ -17,4 +17,17 @@ class UsuarioResposta(BaseModel):
     # Configuração necessária pro FastAPI entender os dados que vêm do banco de dados
     class Config:
         from_attributes = True
-        
+
+# Filtro para os dados de entrada na criacao de uma nova filial
+class UnidadeCriar(BaseModel):
+    nome: str
+    endereco: str
+
+# Filtro para a devolucao dos dados da filial
+class UnidadeResposta(BaseModel):
+    id: int
+    nome: str
+    endereco: str
+
+    class Config:
+        from_attributes = True

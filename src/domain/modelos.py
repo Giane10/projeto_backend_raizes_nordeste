@@ -24,3 +24,11 @@ class Usuario(Base):
     
     # consentimento_lgpd: Booleano (Verdadeiro ou Falso) para registrar o aceite do usuário
     consentimento_lgpd = Column(Boolean, default=False)
+
+class Unidade(Base):
+    __tablename__ = "unidades"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nome = Column(String, nullable=False)
+    endereco = Column(String, nullable=False)
+      
