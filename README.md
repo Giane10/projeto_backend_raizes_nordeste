@@ -38,11 +38,13 @@ Aqui está o nosso mapa de desenvolvimento. As etapas marcadas com 'x' já estã
 1. **Clone o repositório e entre na pasta:**
     ```bash
    git clone [https://github.com/Giane10/projeto_backend_raizes_nordeste.git](https://github.com/Giane10/projeto_backend_raizes_nordeste.git)
+
    cd projeto_backend_raizes_nordeste
     ```
 2. **Crie e ative o ambiente virtual:**
     ```bash
     python -m venv venv
+
     source venv/Scripts/activate  # (No Windows via Git Bash)
     ```
 3. **Instale as dependências:**
@@ -55,6 +57,7 @@ Aqui está o nosso mapa de desenvolvimento. As etapas marcadas com 'x' já estã
 5. **Inicie o servidor da API:**
     ```bash
     cd src
+    
     uvicorn main:app --reload
     ```
 6. **Acesse o Painel de Testes (Swagger UI):**
