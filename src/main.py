@@ -49,3 +49,21 @@ def criar_usuario(usuario: schemas.UsuarioCriar, banco: Session = Depends(obter_
 
     # Retorna o usuário criado (o Pydantic vai filtrar e esconder a senha_hash automaticamente)
     return novo_usuario
+
+# Rota para cadastrar uma nova unidade (filial)
+@app.post("/unidades/", response_model=schemas.UnidadeResposta, status_code=201)
+def criar_unidade(unidade: schemas.UnidadeCriar, banco: Session = Depends(obter_banco)):
+    
+    # Cria a instância do modelo com os dados validados
+    nova_unidade = modelos.Unidade(
+        nome=unidade.nome,
+        endereco=unidade.endereco
+    )
+
+    # Registra no banco de dados
+    banco.add(nova_unidade)
+    banco.commit()
+    banco.refresh(nova_unidade)
+
+    # Retorna os dados com o ID gerado
+    return nova_unidade
