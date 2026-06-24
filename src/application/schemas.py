@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr
+from typing import Optional
 
 # Molde para receber os dados quando alguém se cadastrar
 class UsuarioCriar(BaseModel):
@@ -28,6 +29,38 @@ class UnidadeResposta(BaseModel):
     id: int
     nome: str
     endereco: str
+
+    class Config:
+        from_attributes = True
+
+
+# --- ESQUEMAS DE PRODUTO ---
+class ProdutoBase(BaseModel):
+    nome: str
+    descricao: Optional[str] = None
+    preco: float
+
+class ProdutoCriar(ProdutoBase):
+    pass
+
+class ProdutoResposta(ProdutoBase):
+    id: int
+
+    class Config:
+        from_attributes = True  # Permite que o Pydantic leia modelos do SQLAlchemy
+
+
+# --- ESQUEMAS DE ESTOQUE ---
+class EstoqueBase(BaseModel):
+    unidade_id: int
+    produto_id: int
+    quantidade: int
+
+class EstoqueCriar(EstoqueBase):
+    pass
+
+class EstoqueResposta(EstoqueBase):
+    id: int
 
     class Config:
         from_attributes = True

@@ -67,3 +67,32 @@ def criar_unidade(unidade: schemas.UnidadeCriar, banco: Session = Depends(obter_
 
     # Retorna os dados com o ID gerado
     return nova_unidade
+
+# --- ROTAS DE PRODUTOS ---
+
+@app.post("/produtos/", response_model=schemas.ProdutoResposta, status_code=201)
+def criar_produto(produto: schemas.ProdutoCriar, banco: Session = Depends(obter_banco)):
+    novo_produto = modelos.Produto(
+        nome=produto.nome,
+        descricao=produto.descricao,
+        preco=produto.preco
+    )
+    banco.add(novo_produto)
+    banco.commit()
+    banco.refresh(novo_produto)
+    return novo_produto
+
+
+# --- ROTAS DE ESTOQUE ---
+
+@app.post("/estoques/", response_model=schemas.EstoqueResposta, status_code=201)
+def criar_estoque(estoque: schemas.EstoqueCriar, banco: Session = Depends(obter_banco)):
+    novo_estoque = modelos.Estoque(
+        unidade_id=estoque.unidade_id,
+        produto_id=estoque.produto_id,
+        quantidade=estoque.quantidade
+    )
+    banco.add(novo_estoque)
+    banco.commit()
+    banco.refresh(novo_estoque)
+    return novo_estoque
