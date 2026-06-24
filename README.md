@@ -19,7 +19,7 @@ Aqui está o nosso mapa de desenvolvimento. As etapas marcadas com 'x' já estã
 - [x] 2. Configurar segurança inicial (Cofres `.env` e `.gitignore` oficial)
 - [x] 3. Estabelecer conexão com o Banco de Dados
 - [x] 4. Criar Entidade e Rota de Cadastro de **Usuário** (com hash de senha)
-- [ ] 5. Criar Entidade de **Unidade** (Filial)
+- [x] 5. Criar Entidade de **Unidade** (Filial)
 - [ ] 6. Criar Entidades de **Produto** e **Estoque**
 - [ ] 7. Criar Entidade e Lógica de **Pedido**
 - [ ] 8. Implementar sistema de **Login com Token JWT**
