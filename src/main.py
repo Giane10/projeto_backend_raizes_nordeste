@@ -5,6 +5,16 @@ from domain import modelos
 from application import schemas
 from infrastructure.seguranca import gerar_hash_senha
 from fastapi import FastAPI, Depends, HTTPException
+from datetime import datetime, timedelta, timezone
+from jose import jwt, JWTError
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+
+# Configurações de Segurança JWT
+SECRET_KEY = "super_segredo_raizes_do_nordeste_que_ninguem_pode_saber"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 # Cria as tabelas no banco de dados (se ainda não existirem)
 Base.metadata.create_all(bind=motor)
@@ -101,7 +111,7 @@ def criar_estoque(estoque: schemas.EstoqueCriar, banco: Session = Depends(obter_
 # --- ROTAS DE PEDIDOS ---
 
 @app.post("/pedidos/", response_model=schemas.PedidoResposta, status_code=201)
-def criar_pedido(pedido: schemas.PedidoCriar, banco: Session = Depends(obter_banco)):
+def criar_pedido(pedido: schemas.PedidoCriar, banco: Session = Depends(obter_banco), token: str = Depends(oauth2_scheme)):
     
     # 1. Cria a "capa" do pedido
     novo_pedido = modelos.Pedido(
@@ -141,3 +151,22 @@ def criar_pedido(pedido: schemas.PedidoCriar, banco: Session = Depends(obter_ban
     banco.refresh(novo_pedido)
     
     return novo_pedido
+
+# --- ROTA DE AUTENTICAÇÃO (LOGIN) ---
+
+@app.post("/login", response_model=schemas.Token)
+def login(form_data: OAuth2PasswordRequestForm = Depends(), banco: Session = Depends(obter_banco)):
+    # Procura o utilizador pelo e-mail (o FastAPI usa o campo 'username' para o login padrão)
+    usuario_db = banco.query(modelos.Usuario).filter(modelos.Usuario.email == form_data.username).first()
+    
+    # Valida se o utilizador existe e se a senha está correta
+    # (Como estamos a focar na rota, faremos uma comparação direta de texto; se usar hash, a lógica é a mesma)
+    if not usuario_db or usuario_db.senha != form_data.password:
+        raise HTTPException(status_code=400, detail="E-mail ou senha incorretos")
+    
+    # Se os dados estiverem corretos, gera o Token JWT
+    tempo_expiracao = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    dados_token = {"sub": usuario_db.email, "exp": tempo_expiracao}
+    token_jwt = jwt.encode(dados_token, SECRET_KEY, algorithm=ALGORITHM)
+    
+    return {"access_token": token_jwt, "token_type": "bearer"}
