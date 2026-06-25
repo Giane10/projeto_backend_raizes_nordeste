@@ -4,6 +4,7 @@ from infrastructure.database import motor, Base, SessaoLocal
 from domain import modelos
 from application import schemas
 from infrastructure.seguranca import gerar_hash_senha
+from fastapi import FastAPI, Depends, HTTPException
 
 # Cria as tabelas no banco de dados (se ainda não existirem)
 Base.metadata.create_all(bind=motor)
@@ -96,3 +97,47 @@ def criar_estoque(estoque: schemas.EstoqueCriar, banco: Session = Depends(obter_
     banco.commit()
     banco.refresh(novo_estoque)
     return novo_estoque
+
+# --- ROTAS DE PEDIDOS ---
+
+@app.post("/pedidos/", response_model=schemas.PedidoResposta, status_code=201)
+def criar_pedido(pedido: schemas.PedidoCriar, banco: Session = Depends(obter_banco)):
+    
+    # 1. Cria a "capa" do pedido
+    novo_pedido = modelos.Pedido(
+        usuario_id=pedido.usuario_id,
+        unidade_id=pedido.unidade_id,
+        canal_pedido=pedido.canal_pedido,
+        forma_pagamento=pedido.forma_pagamento
+    )
+    banco.add(novo_pedido)
+    banco.flush() # Reserva o ID do pedido no banco antes de salvar definitivamente
+    
+    total_pedido = 0.0
+    
+    # 2. Processa cada produto da lista do cliente
+    for item in pedido.itens:
+        # Verifica se o produto existe e pega o preço real dele no banco
+        produto_db = banco.query(modelos.Produto).filter(modelos.Produto.id == item.produto_id).first()
+        
+        if not produto_db:
+            raise HTTPException(status_code=404, detail=f"Produto ID {item.produto_id} não encontrado no cardápio")
+        
+        # Cria a linha do item conectando ao pedido
+        novo_item = modelos.ItemPedido(
+            pedido_id=novo_pedido.id,
+            produto_id=item.produto_id,
+            quantidade=item.quantidade,
+            preco_unitario=produto_db.preco
+        )
+        banco.add(novo_item)
+        
+        # Multiplica a quantidade pelo preço e soma no total da nota
+        total_pedido += (produto_db.preco * item.quantidade)
+        
+    # 3. Grava o valor total calculado e finaliza a transação
+    novo_pedido.total = total_pedido
+    banco.commit()
+    banco.refresh(novo_pedido)
+    
+    return novo_pedido
