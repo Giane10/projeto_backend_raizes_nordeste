@@ -8,6 +8,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from datetime import datetime, timedelta, timezone
 from jose import jwt, JWTError
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from passlib.context import CryptContext
 
 # Configurações de Segurança JWT
 SECRET_KEY = "super_segredo_raizes_do_nordeste_que_ninguem_pode_saber"
@@ -15,6 +16,9 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+
+# Configuração do verificador de senhas (desembaralhador)
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Cria as tabelas no banco de dados (se ainda não existirem)
 Base.metadata.create_all(bind=motor)
@@ -159,9 +163,8 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), banco: Session = Dep
     # Procura o utilizador pelo e-mail (o FastAPI usa o campo 'username' para o login padrão)
     usuario_db = banco.query(modelos.Usuario).filter(modelos.Usuario.email == form_data.username).first()
     
-    # Valida se o utilizador existe e se a senha está correta
-    # (Como estamos a focar na rota, faremos uma comparação direta de texto; se usar hash, a lógica é a mesma)
-    if not usuario_db or usuario_db.senha != form_data.password:
+    # Valida se o utilizador existe e compara a senha digitada com o Hash do banco
+    if not usuario_db or not pwd_context.verify(form_data.password, usuario_db.senha_hash):
         raise HTTPException(status_code=400, detail="E-mail ou senha incorretos")
     
     # Se os dados estiverem corretos, gera o Token JWT
