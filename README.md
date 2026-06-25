@@ -23,7 +23,7 @@ Aqui está o nosso mapa de desenvolvimento. As etapas marcadas com 'x' já estã
 - [x] 6. Criar Entidades de **Produto** e **Estoque**
 - [x] 7. Criar Entidade e Lógica de **Pedido**
 - [x] 8. Implementar sistema de **Login com Token JWT**
-- [ ] 9. Finalizar rotas de listagem de cardápio e checkout
+- [x] 9. Finalizar rotas de listagem de cardápio e checkout
 
 ---
 

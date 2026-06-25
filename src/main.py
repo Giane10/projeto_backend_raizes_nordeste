@@ -9,6 +9,7 @@ from datetime import datetime, timedelta, timezone
 from jose import jwt, JWTError
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
+from typing import List
 
 # Configurações de Segurança JWT
 SECRET_KEY = "super_segredo_raizes_do_nordeste_que_ninguem_pode_saber"
@@ -97,6 +98,11 @@ def criar_produto(produto: schemas.ProdutoCriar, banco: Session = Depends(obter_
     banco.refresh(novo_produto)
     return novo_produto
 
+@app.get("/produtos/", response_model=List[schemas.ProdutoResposta])
+def listar_produtos(banco: Session = Depends(obter_banco)):
+    # Busca todos os produtos cadastrados no banco de dados
+    produtos = banco.query(modelos.Produto).all()
+    return produtos
 
 # --- ROTAS DE ESTOQUE ---
 
