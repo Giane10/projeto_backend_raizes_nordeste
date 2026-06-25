@@ -22,7 +22,7 @@ Aqui está o nosso mapa de desenvolvimento. As etapas marcadas com 'x' já estã
 - [x] 5. Criar Entidade de **Unidade** (Filial)
 - [x] 6. Criar Entidades de **Produto** e **Estoque**
 - [x] 7. Criar Entidade e Lógica de **Pedido**
-- [ ] 8. Implementar sistema de **Login com Token JWT**
+- [x] 8. Implementar sistema de **Login com Token JWT**
 - [ ] 9. Finalizar rotas de listagem de cardápio e checkout
 
 ---
@@ -66,4 +66,16 @@ Aqui está o nosso mapa de desenvolvimento. As etapas marcadas com 'x' já estã
     
 
 ---
+
+## 🛡️ Diferenciais e Boas Práticas (Segurança e Qualidade)
+
+Além dos requisitos solicitados, este projeto foi desenvolvido com foco na qualidade contínua e segurança do código. Para isso, foi utilizado o **SonarQube/SonarLint** integrado ao ambiente de desenvolvimento como ferramenta de análise estática (SAST). 
+
+Essa prática garantiu:
+* **Aderência ao Clean Code:** Identificação e correção em tempo real de *code smells* e práticas obsoletas.
+* **Segurança Proativa:** Mitigação de potenciais vulnerabilidades na manipulação de dados sensíveis e fusos horários (adoção rigorosa do padrão UTC).
+* **Desenvolvimento Sustentável:** Manutenção de um código limpo, padronizado e pronto para escalar com segurança.
+
+--- 
+
 *Desenvolvido por Giane Costa*
