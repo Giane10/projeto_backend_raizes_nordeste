@@ -1,5 +1,7 @@
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from typing import Optional, List
+from datetime import datetime
+from domain.modelos import CanalPedidoEnum
 
 # Molde para receber os dados quando alguém se cadastrar
 class UsuarioCriar(BaseModel):
@@ -61,6 +63,44 @@ class EstoqueCriar(EstoqueBase):
 
 class EstoqueResposta(EstoqueBase):
     id: int
+
+    class Config:
+        from_attributes = True
+
+# --- ESQUEMAS DE ITEM DO PEDIDO ---
+class ItemPedidoBase(BaseModel):
+    produto_id: int
+    quantidade: int
+
+class ItemPedidoCriar(ItemPedidoBase):
+    pass
+
+class ItemPedidoResposta(ItemPedidoBase):
+    id: int
+    preco_unitario: float
+
+    class Config:
+        from_attributes = True
+
+
+# --- ESQUEMAS DE PEDIDO ---
+class PedidoBase(BaseModel):
+    usuario_id: int
+    unidade_id: int
+    canal_pedido: CanalPedidoEnum
+    forma_pagamento: str
+
+class PedidoCriar(PedidoBase):
+    # Uma lista permitindo que um pedido tenha vários itens diferentes
+    itens: List[ItemPedidoCriar]
+
+class PedidoResposta(PedidoBase):
+    id: int
+    status: str
+    total: float
+    data_criacao: datetime
+    # Retorna o pedido já com os detalhes dos itens comprados
+    itens: List[ItemPedidoResposta]
 
     class Config:
         from_attributes = True

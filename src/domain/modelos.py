@@ -1,6 +1,8 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, Float, ForeignKey, Enum, DateTime
+from sqlalchemy.orm import relationship
 from infrastructure.database import Base
-from sqlalchemy import Column, Integer, String, Boolean, Float, ForeignKey
+import enum
+from datetime import datetime
 
 class Usuario(Base):
     # Nome exato da tabela que será criada no banco de dados
@@ -59,3 +61,46 @@ class Estoque(Base):
     # Relacionamentos para o banco entender as ligações
     produto = relationship("Produto", back_populates="estoques")
     unidade = relationship("Unidade")
+
+# Definição do ENUM para multicanalidade
+class CanalPedidoEnum(str, enum.Enum):
+    APP = "APP"
+    TOTEM = "TOTEM"
+    BALCAO = "BALCAO"
+    PICKUP = "PICKUP"
+    WEB = "WEB"
+
+class Pedido(Base):
+    __tablename__ = "pedidos"
+
+    id = Column(Integer, primary_key=True, index=True)
+    usuario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=False)
+    unidade_id = Column(Integer, ForeignKey("unidades.id"), nullable=False)
+    
+    # Campo obrigatório de multicanalidade
+    canal_pedido = Column(Enum(CanalPedidoEnum), nullable=False)
+    
+    status = Column(String, default="AGUARDANDO_PAGAMENTO", nullable=False)
+    total = Column(Float, default=0.0, nullable=False)
+    forma_pagamento = Column(String, nullable=False)
+    data_criacao = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    # Relacionamentos para o ORM orquestrar os dados
+    usuario = relationship("Usuario")
+    unidade = relationship("Unidade")
+    itens = relationship("ItemPedido", back_populates="pedido")
+
+
+class ItemPedido(Base):
+    __tablename__ = "itens_pedido"
+
+    id = Column(Integer, primary_key=True, index=True)
+    pedido_id = Column(Integer, ForeignKey("pedidos.id"), nullable=False)
+    produto_id = Column(Integer, ForeignKey("produtos.id"), nullable=False)
+    quantidade = Column(Integer, nullable=False)
+    preco_unitario = Column(Float, nullable=False)
+
+    # Ligações reversas
+    pedido = relationship("Pedido", back_populates="itens")
+    produto = relationship("Produto")
+
