@@ -10,6 +10,11 @@ from jose import jwt, JWTError
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from typing import List
+import logging
+from datetime import datetime
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("api_raizes")
 
 # Configurações de Segurança JWT
 SECRET_KEY = "super_segredo_raizes_do_nordeste_que_ninguem_pode_saber"
@@ -159,7 +164,9 @@ def criar_pedido(pedido: schemas.PedidoCriar, banco: Session = Depends(obter_ban
     novo_pedido.total = total_pedido
     banco.commit()
     banco.refresh(novo_pedido)
-    
+
+    logger.info(f"AUDITORIA | Ação: Criar Pedido | PedidoID: {novo_pedido.id} | Canal: {pedido.canal_pedido} | Data: {datetime.now()}")
+
     return novo_pedido
 
 # --- ROTA DE AUTENTICAÇÃO (LOGIN) ---
@@ -177,5 +184,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), banco: Session = Dep
     tempo_expiracao = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     dados_token = {"sub": usuario_db.email, "exp": tempo_expiracao}
     token_jwt = jwt.encode(dados_token, SECRET_KEY, algorithm=ALGORITHM)
+
+    logger.info(f"AUDITORIA | Ação: Login | Usuario: {usuario_db.email} | Data: {datetime.now()}")
     
     return {"access_token": token_jwt, "token_type": "bearer"}
