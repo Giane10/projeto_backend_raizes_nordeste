@@ -20,8 +20,8 @@ Aqui está o nosso mapa de desenvolvimento. As etapas marcadas com 'x' já estã
 - [x] 3. Estabelecer conexão com o Banco de Dados
 - [x] 4. Criar Entidade e Rota de Cadastro de **Usuário** (com hash de senha)
 - [x] 5. Criar Entidade de **Unidade** (Filial)
-- [ ] 6. Criar Entidades de **Produto** e **Estoque**
-- [ ] 7. Criar Entidade e Lógica de **Pedido**
+- [x] 6. Criar Entidades de **Produto** e **Estoque**
+- [x] 7. Criar Entidade e Lógica de **Pedido**
 - [ ] 8. Implementar sistema de **Login com Token JWT**
 - [ ] 9. Finalizar rotas de listagem de cardápio e checkout
 
