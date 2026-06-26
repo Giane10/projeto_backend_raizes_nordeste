@@ -136,7 +136,7 @@ def criar_pedido(pedido: schemas.PedidoCriar, banco: Session = Depends(obter_ban
         forma_pagamento=pedido.forma_pagamento
     )
     banco.add(novo_pedido)
-    banco.flush() # Reserva o ID do pedido no banco antes de salvar definitivamente
+    banco.flush() # Reserva o ID do pedido no banco
     
     total_pedido = 0.0
     
@@ -147,6 +147,23 @@ def criar_pedido(pedido: schemas.PedidoCriar, banco: Session = Depends(obter_ban
         
         if not produto_db:
             raise HTTPException(status_code=404, detail=f"Produto ID {item.produto_id} não encontrado no cardápio")
+        
+        # ---  VALIDACAO DE ESTOQUE (RN01) ---
+        estoque_db = banco.query(modelos.Estoque).filter(
+            modelos.Estoque.produto_id == item.produto_id,
+            modelos.Estoque.unidade_id == pedido.unidade_id
+        ).first()
+
+        # Se não houver registro de estoque ou se a quantidade disponível for insuficiente
+        if not estoque_db or estoque_db.quantidade < item.quantidade:
+            raise HTTPException(
+                status_code=409, 
+                detail=f"Estoque insuficiente para o produto ID {item.produto_id}. Disponível: {estoque_db.quantidade if estoque_db else 0}"
+            )
+        
+        # Se houver estoque, faz a baixa (subtrai a quantidade)
+        estoque_db.quantidade -= item.quantidade
+        # -------------------------------------------
         
         # Cria a linha do item conectando ao pedido
         novo_item = modelos.ItemPedido(
@@ -171,7 +188,7 @@ def criar_pedido(pedido: schemas.PedidoCriar, banco: Session = Depends(obter_ban
 
 # --- ROTA DE AUTENTICAÇÃO (LOGIN) ---
 
-@app.post("/login", response_model=schemas.Token)
+@app.post("/auth/login", response_model=schemas.Token)
 def login(form_data: OAuth2PasswordRequestForm = Depends(), banco: Session = Depends(obter_banco)):
     # Procura o utilizador pelo e-mail (o FastAPI usa o campo 'username' para o login padrão)
     usuario_db = banco.query(modelos.Usuario).filter(modelos.Usuario.email == form_data.username).first()
