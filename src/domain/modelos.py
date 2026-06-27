@@ -18,7 +18,7 @@ class Usuario(Base):
     # o banco de dados não pode aceitar um usuário sem nome ou sem senha
     email = Column(String, unique=True, index=True, nullable=False)  
     
-    # senha_hash: Regra de DevSecOps! Nunca salvamos a senha pura, apenas o hash irreversível
+    # salvamos apenas o hash irreversível
     senha_hash = Column(String, nullable=False)
     
     # perfil (Role): Controle de acesso (Ex: CLIENTE, ADMIN, COZINHA)
@@ -51,7 +51,7 @@ class Produto(Base):
 
 
 class Estoque(Base):
-    __tablename__ = "estoque"
+    __tablename__ = "estoques"
 
     id = Column(Integer, primary_key=True, index=True)
     unidade_id = Column(Integer, ForeignKey("unidades.id"), nullable=False)

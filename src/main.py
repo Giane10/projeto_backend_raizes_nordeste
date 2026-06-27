@@ -186,6 +186,100 @@ def criar_pedido(pedido: schemas.PedidoCriar, banco: Session = Depends(obter_ban
 
     return novo_pedido
 
+# --- ROTA DE LISTAGEM DE PEDIDOS ---
+
+@app.get("/pedidos/", response_model=List[schemas.PedidoResposta])
+def listar_pedidos(
+    canal_pedido: str = None, 
+    status: str = None, 
+    banco: Session = Depends(obter_banco), 
+    token: str = Depends(oauth2_scheme)
+):
+    query = banco.query(modelos.Pedido)
+    
+    # Filtros opcionais para o requisito de multicanalidade
+    if canal_pedido:
+        query = query.filter(modelos.Pedido.canal_pedido == canal_pedido)
+    if status:
+        query = query.filter(modelos.Pedido.status == status)
+        
+    pedidos = query.all()
+    
+    logger.info(f"AUDITORIA | Ação: Listar Pedidos | Filtros: canal={canal_pedido}, status={status} | Data: {datetime.now()}")
+    
+    return pedidos
+
+# --- ROTA DE ATUALIZAÇÃO DE STATUS DO PEDIDO ---
+
+@app.patch("/pedidos/{pedido_id}/", response_model=schemas.PedidoResposta)
+def atualizar_status(
+    pedido_id: int, 
+    novo_status: str, 
+    banco: Session = Depends(obter_banco), 
+    token: str = Depends(oauth2_scheme)
+):
+    # Busca o pedido no banco
+    pedido = banco.query(modelos.Pedido).filter(modelos.Pedido.id == pedido_id).first()
+    
+    if not pedido:
+        raise HTTPException(status_code=404, detail="Pedido não encontrado")
+    
+    # Atualiza o status (Certifique-se que você tenha o campo 'status' no seu modelo Pedido)
+    pedido.status = novo_status 
+    banco.commit()
+    banco.refresh(pedido)
+    
+    # Registro de auditoria para ações sensíveis de mudança de estoque/estado
+    logger.info(f"AUDITORIA | Ação: Atualizar Status | PedidoID: {pedido_id} | Novo Status: {novo_status} | Data: {datetime.now()}")
+    
+    return pedido
+
+# --- ROTAS DO PROGRAMA DE FIDELIDADE (LGPD) ---
+
+@app.get("/fidelidade/", status_code=200)
+def consultar_pontos_fidelidade(
+    banco: Session = Depends(obter_banco), 
+    token: str = Depends(oauth2_scheme)
+):
+    """
+    Rota para consulta de pontos do Programa de Fidelidade.
+    Exige autenticação JWT e valida o consentimento da LGPD antes de expor os dados.
+    """
+    # 1. Recupera o e-mail do usuário logado decodificando o Token JWT
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email_usuario = payload.get("sub")
+        if email_usuario is None:
+            raise HTTPException(status_code=401, detail="Token inválido")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Token inválido ou expirado")
+
+    # 2. Busca o usuário no banco de dados para checar o consentimento
+    usuario_db = banco.query(modelos.Usuario).filter(modelos.Usuario.email == email_usuario).first()
+    
+    if not usuario_db:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    
+    # 3. Validação do Consentimento LGPD (Requisito obrigatório do Roteiro da UNINTER)
+    if not usuario_db.consentimento_lgpd:
+        raise HTTPException(
+            status_code=403, 
+            detail="Acesso negado. É necessário fornecer o consentimento de uso de dados (LGPD) para participar do programa de fidelidade."
+        )
+    
+    # 4. Regra de negócio simplificada para o MVP (Retorna um saldo simulado de pontos)
+    saldo_simulado = 150
+    
+    # Registro de log de auditoria para rastreamento de acesso a dados sensíveis de clientes
+    logger.info(f"AUDITORIA | Ação: Consulta Fidelidade | Usuario: {usuario_db.email} | Status: Permitido | Data: {datetime.now()}")
+    
+    return {
+        "cliente": usuario_db.nome,
+        "pontos_acumulados": saldo_simulado,
+        "status_programa": "Ativo",
+        "mensagem": "Obrigado por fazer parte do Raízes do Nordeste!"
+    }
+
 # --- ROTA DE AUTENTICAÇÃO (LOGIN) ---
 
 @app.post("/auth/login", response_model=schemas.Token)
