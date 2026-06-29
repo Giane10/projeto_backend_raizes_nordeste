@@ -43,7 +43,23 @@ def obter_banco():
     finally:
         banco.close()
 
-# Rota para cadastrar um novo usuário
+# Dependência que verifica se o usuário é administrador
+def verificar_admin(token: str = Depends(oauth2_scheme), banco: Session = Depends(obter_banco)):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email_usuario = payload.get("sub")
+        usuario = banco.query(modelos.Usuario).filter(modelos.Usuario.email == email_usuario).first()
+        
+        # Verifica se o perfil no banco é "ADMINISTRADOR"
+        if not usuario or usuario.perfil != "ADMINISTRADOR":
+            raise HTTPException(status_code=403, detail="Acesso negado: Requer privilégios de administrador.")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Token inválido")
+    return usuario
+
+
+# --- ROTAS DE USUÁRIOS ---
+
 @app.post("/usuarios/", response_model=schemas.UsuarioResposta, status_code=201)
 def criar_usuario(usuario: schemas.UsuarioCriar, banco: Session = Depends(obter_banco)):
     
@@ -71,6 +87,8 @@ def criar_usuario(usuario: schemas.UsuarioCriar, banco: Session = Depends(obter_
     # Retorna o usuário criado (o Pydantic vai filtrar e esconder a senha_hash automaticamente)
     return novo_usuario
 
+# --- ROTAS DE UNIDADES ---
+
 # Rota para cadastrar uma nova unidade (filial)
 @app.post("/unidades/", response_model=schemas.UnidadeResposta, status_code=201)
 def criar_unidade(unidade: schemas.UnidadeCriar, banco: Session = Depends(obter_banco)):
@@ -87,6 +105,16 @@ def criar_unidade(unidade: schemas.UnidadeCriar, banco: Session = Depends(obter_
     banco.refresh(nova_unidade)
 
     # Retorna os dados com o ID gerado
+    return nova_unidade
+
+# Rota protegida: somente administradores podem cadastrar unidades
+@app.post("/unidades/", response_model=schemas.UnidadeResposta, status_code=201, dependencies=[Depends(verificar_admin)])
+def criar_unidade(unidade: schemas.UnidadeCriar, banco: Session = Depends(obter_banco)):
+    # O código interno da rota permanece igual
+    nova_unidade = modelos.Unidade(nome=unidade.nome, endereco=unidade.endereco)
+    banco.add(nova_unidade)
+    banco.commit()
+    banco.refresh(nova_unidade)
     return nova_unidade
 
 # --- ROTAS DE PRODUTOS ---
