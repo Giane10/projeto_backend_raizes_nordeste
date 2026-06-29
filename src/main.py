@@ -149,13 +149,6 @@ def criar_pedido(pedido: schemas.PedidoCriar, banco: Session = Depends(obter_ban
         forma_pagamento=pedido.forma_pagamento
     )
 
-    # --- INSERÇÃO DA LÓGICA PARA O PAGAMENTO SIMULADO RECUSADO ---
-    if pedido.forma_pagamento == "CARTAO_BLOQUEADO":
-        raise HTTPException(
-            status_code=402, 
-            detail="Pagamento recusado: Cartão sem saldo ou bloqueado."
-        )
-    
 
     banco.add(novo_pedido)
     banco.flush() # Reserva o ID do pedido no banco
@@ -246,7 +239,7 @@ def atualizar_status(
     if not pedido:
         raise HTTPException(status_code=404, detail="Pedido não encontrado")
     
-    # Atualiza o status (Certifique-se que você tenha o campo 'status' no seu modelo Pedido)
+    # Atualiza o status 
     pedido.status = novo_status 
     banco.commit()
     banco.refresh(pedido)
@@ -302,6 +295,43 @@ def consultar_pontos_fidelidade(
         "mensagem": "Obrigado por fazer parte do Raízes do Nordeste!"
     }
 
+# --- ROTA DE PROCESSAMENTO DE PAGAMENTO (SIMULADO - MVP) ---
+
+@app.post("/pagamentos/processar", status_code=200)
+def processar_pagamento(
+    dados_pagamento: dict, 
+    banco: Session = Depends(obter_banco),
+    token: str = Depends(oauth2_scheme)
+):
+    pedido_id = dados_pagamento.get("pedido_id")
+    status_pagamento = dados_pagamento.get("status_pagamento")
+
+    # 1. Busca o pedido no banco
+    pedido_db = banco.query(modelos.Pedido).filter(modelos.Pedido.id == pedido_id).first()
+    
+    if not pedido_db:
+        raise HTTPException(status_code=404, detail="Pedido não encontrado para pagamento.")
+
+    # 2. Lida com pagamento recusado 
+    if status_pagamento == "RECUSADO" or status_pagamento == "CARTAO_BLOQUEADO":
+        pedido_db.status = "RECUSADO"
+        banco.commit()
+        banco.refresh(pedido_db)
+        logger.info(f"AUDITORIA | Ação: Pagamento Recusado | PedidoID: {pedido_id} | Data: {datetime.now()}")
+        raise HTTPException(status_code=402, detail="Pagamento recusado: Cartão sem saldo ou bloqueado.")
+
+    # 3. Simula a aprovação e muda status para RECEBIDO 
+    if status_pagamento == "APROVADO":
+        pedido_db.status = "RECEBIDO"
+        banco.commit()
+        banco.refresh(pedido_db)
+        logger.info(f"AUDITORIA | Ação: Pagamento Aprovado | PedidoID: {pedido_id} | Data: {datetime.now()}")
+        return {
+            "mensagem": "Pagamento aprovado com sucesso", 
+            "pedido_id": pedido_id, 
+            "novo_status": pedido_db.status
+        }
+
 # --- ROTA DE AUTENTICAÇÃO (LOGIN) ---
 
 @app.post("/auth/login", response_model=schemas.Token)
@@ -311,7 +341,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), banco: Session = Dep
     
     # Valida se o utilizador existe e compara a senha digitada com o Hash do banco
     if not usuario_db or not pwd_context.verify(form_data.password, usuario_db.senha_hash):
-        raise HTTPException(status_code=400, detail="E-mail ou senha incorretos")
+        raise HTTPException(status_code=401, detail="E-mail ou senha incorretos")
     
     # Se os dados estiverem corretos, gera o Token JWT
     tempo_expiracao = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
