@@ -89,28 +89,13 @@ def criar_usuario(usuario: schemas.UsuarioCriar, banco: Session = Depends(obter_
 
 # --- ROTAS DE UNIDADES ---
 
-# Rota para cadastrar uma nova unidade (filial)
-@app.post("/unidades/", response_model=schemas.UnidadeResposta, status_code=201)
-def criar_unidade(unidade: schemas.UnidadeCriar, banco: Session = Depends(obter_banco)):
-    
-    # Cria a instância do modelo com os dados validados
-    nova_unidade = modelos.Unidade(
-        nome=unidade.nome,
-        endereco=unidade.endereco
-    )
-
-    # Registra no banco de dados
-    banco.add(nova_unidade)
-    banco.commit()
-    banco.refresh(nova_unidade)
-
-    # Retorna os dados com o ID gerado
-    return nova_unidade
-
 # Rota protegida: somente administradores podem cadastrar unidades
 @app.post("/unidades/", response_model=schemas.UnidadeResposta, status_code=201, dependencies=[Depends(verificar_admin)])
-def criar_unidade(unidade: schemas.UnidadeCriar, banco: Session = Depends(obter_banco)):
-    # O código interno da rota permanece igual
+def criar_unidade(
+    unidade: schemas.UnidadeCriar, 
+    banco: Session = Depends(obter_banco),
+    token: str = Depends(oauth2_scheme)
+):
     nova_unidade = modelos.Unidade(nome=unidade.nome, endereco=unidade.endereco)
     banco.add(nova_unidade)
     banco.commit()
@@ -163,6 +148,15 @@ def criar_pedido(pedido: schemas.PedidoCriar, banco: Session = Depends(obter_ban
         canal_pedido=pedido.canal_pedido,
         forma_pagamento=pedido.forma_pagamento
     )
+
+    # --- INSERÇÃO DA LÓGICA PARA O PAGAMENTO SIMULADO RECUSADO ---
+    if pedido.forma_pagamento == "CARTAO_BLOQUEADO":
+        raise HTTPException(
+            status_code=402, 
+            detail="Pagamento recusado: Cartão sem saldo ou bloqueado."
+        )
+    
+
     banco.add(novo_pedido)
     banco.flush() # Reserva o ID do pedido no banco
     
