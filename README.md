@@ -83,4 +83,22 @@ Essa prática garantiu:
 
 --- 
 
+## 📸 Evidências dos Testes (QA)
+Para validar o funcionamento da API, realizamos uma bateria de 10 testes (T01-T10) cobrindo fluxos de sucesso e exceções. As evidências de cada execução estão detalhadas abaixo:
+
+| ID | Cenário | Status Esperado | Evidência |
+| :--- | :--- | :---: | :--- |
+| T01 | Login com sucesso | 200 OK | [Ver print](assets/T01-Login-sucesso.png) |
+| T02 | Login senha incorreta | 401 Unauthorized | [Ver print](assets/T02-senha-incorreta.png) |
+| T03 | Listar sem token | 401 Unauthorized | [Ver print](assets/T03-Pedidos-Listar-sem-token.png) |
+| T04 | Criar unidade (bloqueado) | 401 Unauthorized | [Ver print](assets/T04-Criar-unidade-Bloqueado.png) |
+| T05 | Criação de pedido sucesso | 201 Created | [Ver print](assets/T05-Criação-pedido-sucesso.png) |
+| T06 | Pedido sem campo obrigatório | 422 Unprocessable | [Ver print](assets/T06-Pedido-sem-campo-canalPedido.png) |
+| T07 | Estoque insuficiente | 409 Conflict | [Ver print](assets/T07-Estoque-insuficiente.png) |
+| T08 | Produto inexistente | 404 Not Found | [Ver print](assets/T08-Produto-inexistente.png) |
+| T09 | Pagamento aprovado | 200 OK | [Ver print](assets/T09-Pagamento-simulado-aprovado.png) |
+| T10 | Pagamento recusado | 402 Payment Required | [Ver print](assets/T10-Pagamento-recusado.png) |
+
+---
 *Desenvolvido por Giane Costa*
+--- 
