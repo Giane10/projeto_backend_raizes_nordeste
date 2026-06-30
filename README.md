@@ -98,5 +98,7 @@ Para validar o funcionamento da API, realizamos uma bateria de 10 testes (T01-T1
 | T08 | Produto inexistente | 404 Not Found | [Ver print](src/assets/T08-Produto-inexistente.png) |
 | T09 | Pagamento aprovado | 200 OK | [Ver print](src/assets/T09-Pagamento-simulado-aprovado.png) |
 | T10 | Pagamento recusado | 402 Payment Required | [Ver print](src/assets/T10-Pagamento-recusado.png) |
+---
+
 *Desenvolvido por Giane Costa*
 --- 
