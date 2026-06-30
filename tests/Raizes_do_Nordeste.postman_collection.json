@@ -70,7 +70,14 @@
       ],
       "request": {
         "auth": {
-          "type": "noauth"
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "MEU_TOKEN_AQUI",
+              "type": "string"
+            }
+          ]
         },
         "method": "POST",
         "header": [],
@@ -126,16 +133,24 @@
         "method": "POST",
         "header": [],
         "body": {
-          "mode": "raw",
-          "raw": "{\n\t\"name\": \"Add your name in the body\"\n}",
-          "options": {
-            "raw": {
-              "language": "json"
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "username",
+              "value": "giane@teste.com",
+              "type": "text",
+              "uuid": "4ed58da6-9196-4b66-98af-1b85cf54c887"
+            },
+            {
+              "key": "password",
+              "value": "senha_errada",
+              "type": "text",
+              "uuid": "1d004998-6063-4cd9-9d0e-152219094d30"
             }
-          }
+          ]
         },
         "url": {
-          "raw": "http://127.0.0.1:8000/pagamentos/processar",
+          "raw": "http://127.0.0.1:8000/auth/login",
           "protocol": "http",
           "host": [
             "127",
@@ -145,8 +160,8 @@
           ],
           "port": "8000",
           "path": [
-            "pagamentos",
-            "processar"
+            "auth",
+            "login"
           ]
         }
       },
@@ -172,7 +187,14 @@
       ],
       "request": {
         "auth": {
-          "type": "noauth"
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "MEU_TOKEN_AQUI",
+              "type": "string"
+            }
+          ]
         },
         "method": "POST",
         "header": [],
@@ -186,7 +208,7 @@
           }
         },
         "url": {
-          "raw": "http://127.0.0.1:8000/pagamentos/processar",
+          "raw": "http://127.0.0.1:8000/unidades/",
           "protocol": "http",
           "host": [
             "127",
@@ -196,8 +218,8 @@
           ],
           "port": "8000",
           "path": [
-            "pagamentos",
-            "processar"
+            "unidades",
+            ""
           ]
         }
       },
@@ -223,13 +245,20 @@
       ],
       "request": {
         "auth": {
-          "type": "noauth"
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "MEU_TOKEN_AQUI",
+              "type": "string"
+            }
+          ]
         },
         "method": "POST",
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n\t\"name\": \"Add your name in the body\"\n}",
+          "raw": "{\n    \"usuario_id\": 1,\n    \"unidade_id\": 1,\n    \"canal_pedido\": \"TOTEM\",\n    \"forma_pagamento\": \"PIX\",\n    \"itens\": [\n        {\n            \"produto_id\": 1,\n            \"quantidade\": 1\n        }\n    ]\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -237,7 +266,7 @@
           }
         },
         "url": {
-          "raw": "http://127.0.0.1:8000/pagamentos/processar",
+          "raw": "http://127.0.0.1:8000/pedidos/",
           "protocol": "http",
           "host": [
             "127",
@@ -247,8 +276,8 @@
           ],
           "port": "8000",
           "path": [
-            "pagamentos",
-            "processar"
+            "pedidos",
+            ""
           ]
         }
       },
@@ -274,13 +303,20 @@
       ],
       "request": {
         "auth": {
-          "type": "noauth"
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "MEU_TOKEN_AQUI",
+              "type": "string"
+            }
+          ]
         },
         "method": "POST",
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n\t\"name\": \"Add your name in the body\"\n}",
+          "raw": "{\n    \"usuario_id\": 1,\n    \"unidade_id\": 1,\n    \"forma_pagamento\": \"PIX\",\n    \"itens\": [\n        {\n            \"produto_id\": 1,\n            \"quantidade\": 1\n        }\n    ]\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -288,7 +324,7 @@
           }
         },
         "url": {
-          "raw": "http://127.0.0.1:8000/pagamentos/processar",
+          "raw": "http://127.0.0.1:8000/pedidos/",
           "protocol": "http",
           "host": [
             "127",
@@ -298,8 +334,8 @@
           ],
           "port": "8000",
           "path": [
-            "pagamentos",
-            "processar"
+            "pedidos",
+            ""
           ]
         }
       },
@@ -325,13 +361,20 @@
       ],
       "request": {
         "auth": {
-          "type": "noauth"
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "MEU_TOKEN_AQUI",
+              "type": "string"
+            }
+          ]
         },
         "method": "POST",
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n\t\"name\": \"Add your name in the body\"\n}",
+          "raw": "{\n    \"usuario_id\": 1,\n    \"unidade_id\": 1,\n    \"canal_pedido\": \"TOTEM\",\n    \"forma_pagamento\": \"PIX\",\n    \"itens\": [\n        {\n            \"produto_id\": 3,\n            \"quantidade\": 5\n        }\n    ]\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -339,7 +382,7 @@
           }
         },
         "url": {
-          "raw": "http://127.0.0.1:8000/pagamentos/processar",
+          "raw": "http://127.0.0.1:8000/pedidos/",
           "protocol": "http",
           "host": [
             "127",
@@ -349,8 +392,8 @@
           ],
           "port": "8000",
           "path": [
-            "pagamentos",
-            "processar"
+            "pedidos",
+            ""
           ]
         }
       },
@@ -382,7 +425,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n\t\"name\": \"Add your name in the body\"\n}",
+          "raw": "{\n    \"nome\": \"Suco de Cajá\",\n    \"preco\": 9.99\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -390,7 +433,7 @@
           }
         },
         "url": {
-          "raw": "http://127.0.0.1:8000/pagamentos/processar",
+          "raw": "http://127.0.0.1:8000/produtos/",
           "protocol": "http",
           "host": [
             "127",
@@ -400,8 +443,8 @@
           ],
           "port": "8000",
           "path": [
-            "pagamentos",
-            "processar"
+            "produtos",
+            ""
           ]
         }
       },
@@ -433,7 +476,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n\t\"name\": \"Add your name in the body\"\n}",
+          "raw": "{\n    \"produto_id\": 3,\n    \"unidade_id\": 1,\n    \"quantidade\": 2\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -441,7 +484,7 @@
           }
         },
         "url": {
-          "raw": "http://127.0.0.1:8000/pagamentos/processar",
+          "raw": "http://127.0.0.1:8000/estoques/",
           "protocol": "http",
           "host": [
             "127",
@@ -451,8 +494,8 @@
           ],
           "port": "8000",
           "path": [
-            "pagamentos",
-            "processar"
+            "estoques",
+            ""
           ]
         }
       },
@@ -478,13 +521,20 @@
       ],
       "request": {
         "auth": {
-          "type": "noauth"
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "MEU_TOKEN_AQUI",
+              "type": "string"
+            }
+          ]
         },
         "method": "POST",
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n\t\"name\": \"Add your name in the body\"\n}",
+          "raw": "{\n    \"usuario_id\": 1,\n    \"unidade_id\": 1,\n    \"canal_pedido\": \"TOTEM\",\n    \"forma_pagamento\": \"PIX\",\n    \"itens\": [\n        {\n            \"produto_id\": 999,\n            \"quantidade\": 1\n        }\n    ]\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -492,7 +542,7 @@
           }
         },
         "url": {
-          "raw": "http://127.0.0.1:8000/pagamentos/processar",
+          "raw": "http://127.0.0.1:8000/pedidos/",
           "protocol": "http",
           "host": [
             "127",
@@ -502,8 +552,8 @@
           ],
           "port": "8000",
           "path": [
-            "pagamentos",
-            "processar"
+            "pedidos",
+            ""
           ]
         }
       },
@@ -529,13 +579,20 @@
       ],
       "request": {
         "auth": {
-          "type": "noauth"
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "MEU_TOKEN_AQUI",
+              "type": "string"
+            }
+          ]
         },
         "method": "POST",
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n\t\"name\": \"Add your name in the body\"\n}",
+          "raw": "{\n    \"usuario_id\": 1,\n    \"unidade_id\": 1,\n    \"canal_pedido\": \"TOTEM\",\n    \"forma_pagamento\": \"CARTAO\",\n    \"itens\": [\n        {\n            \"produto_id\": 3,\n            \"quantidade\": 1\n        }\n    ]\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -543,7 +600,7 @@
           }
         },
         "url": {
-          "raw": "http://127.0.0.1:8000/pagamentos/processar",
+          "raw": "http://127.0.0.1:8000/pedidos/",
           "protocol": "http",
           "host": [
             "127",
@@ -553,8 +610,8 @@
           ],
           "port": "8000",
           "path": [
-            "pagamentos",
-            "processar"
+            "pedidos",
+            ""
           ]
         }
       },
@@ -580,13 +637,20 @@
       ],
       "request": {
         "auth": {
-          "type": "noauth"
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "MEU_TOKEN_AQUI",
+              "type": "string"
+            }
+          ]
         },
         "method": "POST",
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n\t\"name\": \"Add your name in the body\"\n}",
+          "raw": "{\n    \"usuario_id\": 1,\n    \"unidade_id\": 1,\n    \"canal_pedido\": \"TOTEM\",\n    \"forma_pagamento\": \"CARTAO_BLOQUEADO\",\n    \"itens\": [\n        {\n            \"produto_id\": 3,\n            \"quantidade\": 1\n        }\n    ]\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -594,7 +658,7 @@
           }
         },
         "url": {
-          "raw": "http://127.0.0.1:8000/pagamentos/processar",
+          "raw": "http://127.0.0.1:8000/pedidos/",
           "protocol": "http",
           "host": [
             "127",
@@ -604,8 +668,8 @@
           ],
           "port": "8000",
           "path": [
-            "pagamentos",
-            "processar"
+            "pedidos",
+            ""
           ]
         }
       },
@@ -614,8 +678,26 @@
     {
       "name": "T03 - Listar sem token",
       "request": {
+        "auth": {
+          "type": "noauth"
+        },
         "method": "GET",
-        "header": []
+        "header": [],
+        "url": {
+          "raw": "http://127.0.0.1:8000/pedidos/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "pedidos",
+            ""
+          ]
+        }
       },
       "response": []
     }
