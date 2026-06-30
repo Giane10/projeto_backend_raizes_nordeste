@@ -133,3 +133,5 @@ site.db
 
 # Ignorar configurações de outras plataformas CI/CD
 .gitlab-ci.yml
+
+limpar.py

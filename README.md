@@ -65,6 +65,11 @@ Aqui está o nosso mapa de desenvolvimento. As etapas marcadas com 'x' já estã
     * Abra o navegador no endereço: http://127.0.0.1:8000/docs
     
 
+## 🧪 Testes de API
+Disponibilizamos uma Coleção de Testes (Postman) na pasta /tests deste repositório.
+
+Como usar: Importe o arquivo **Raizes_do_Nordeste.postman_collection.json** diretamente no seu Postman para validar todos os cenários (fluxos felizes e exceções de segurança/LGPD) descritos na Tabela Consolidada de Testes.
+
 ---
 
 ## 🛡️ Diferenciais e Boas Práticas (Segurança e Qualidade)

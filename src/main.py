@@ -141,6 +141,9 @@ def criar_estoque(estoque: schemas.EstoqueCriar, banco: Session = Depends(obter_
 @app.post("/pedidos/", response_model=schemas.PedidoResposta, status_code=201)
 def criar_pedido(pedido: schemas.PedidoCriar, banco: Session = Depends(obter_banco), token: str = Depends(oauth2_scheme)):
     
+    if pedido.forma_pagamento == "CARTAO_BLOQUEADO":
+        raise HTTPException(status_code=402, detail="Pagamento recusado: Cartão sem saldo ou bloqueado.")
+
     # 1. Cria a "capa" do pedido
     novo_pedido = modelos.Pedido(
         usuario_id=pedido.usuario_id,
